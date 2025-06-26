@@ -7,4 +7,3 @@ app = FastAPI()
 # 注册各模块路由
 app.include_router(blog_router, prefix="/blogs")
 app.include_router(surf_router, prefix="/surf")
-#后续模块同理test

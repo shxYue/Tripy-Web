@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+  <title>Tripy-Web 主页面</title>
+  <!-- 可放入 static/common.css -->
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 40px;
+    }
+    nav {
+      background: #ff69b4; /* 亮粉色 */
+      color: #fff;
+      padding: 0 40px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    /* 左侧Logo */
+    nav .logo {
+      font-size: 22px;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+    /* 右侧区域：下拉菜单与登录/登出按钮 */
+    nav .right-area {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+    /* 下拉菜单结构 */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    .dropdown > button {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      padding: 8px 12px;
+    }
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      background-color: #fff;
+      min-width: 160px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      z-index: 1;
+      border-radius: 4px;
+    }
+    .dropdown-content a {
+      color: #333;
+      padding: 10px 16px;
+      text-decoration: none;
+      display: block;
+    }
+    .dropdown-content a:hover {
+      background-color: #f1f1f1;
+    }
+    /* 鼠标悬停显示下拉菜单 */
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+    /* 登录/登出按钮样式 */
+    .auth-btn {
+      background: transparent;
+      border: 1px solid #fff;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .auth-btn:hover {
+      background: rgba(255,255,255,0.2);
+    }
+    /* 内容区域 */
+    .main-content { margin-top: 72px; }
+    h1 { margin-bottom: 40px; }
+    .entry-list { display: flex; justify-content: center; gap: 40px; }
+    .entry {
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 30px 40px;
+      background: #f8f8f8;
+      transition: box-shadow 0.2s;
+    }
+    .entry:hover { box-shadow: 0 0 10px #b3e0ff; }
+    .entry-title { font-size: 22px; margin-bottom: 10px; }
+    .entry-desc { color: #666; }
+  </style>
+</head>
+<body>
+  <!-- 顶部菜单栏 -->
+  <nav>
+    <div class="logo">Tripy-Web</div>
+    <div class="right-area">
+      <!-- 下拉菜单：包含博客管理和冲浪小游戏 -->
+      <div class="dropdown">
+        <button>功能菜单 ▾</button>
+        <div class="dropdown-content">
+          <a href="blog_frontend.html">博客管理</a>
+          <a href="surf_combined.html">冲浪小游戏</a>
+          <!-- 将来可添加更多功能入口 -->
+        </div>
+      </div>
+      <!-- 登录/登出按钮 -->
+      <button id="authBtn" class="auth-btn" onclick="authAction()">登录</button>
+    </div>
+  </nav>
+  
+  <div class="main-content">
+    <h1>Tripy-Web 主页面</h1>
+    <div class="entry-list">
+      <!-- 示例入口区块，可根据系统需求进一步扩展私密数据展示 -->
+      <div class="entry">
+        <div class="entry-title">欢迎页</div>
+        <div class="entry-desc">这里显示一些公开信息</div>
+      </div>
+      <!-- 仅登录用户可见的私密数据入口示例 -->
+      <div class="entry" id="privateEntry" style="display:none;">
+        <div class="entry-title">私密数据</div>
+        <div class="entry-desc">只有登录后可以访问</div>
+        <button onclick="fetchPrivateData()">获取私密数据</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 引入GSAP动画库 -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script>
+    // DOM加载后启动动画
+    window.addEventListener('DOMContentLoaded', function() {
+      gsap.from("h1", { opacity: 0, y: -100, duration: 1.2, ease: "bounce" });
+      gsap.from(".entry", {
+        opacity: 0,
+        y: 100,
+        stagger: 0.2,
+        duration: 1,
+        ease: "back"
+      });
+      // 页面加载时检查登录状态
+      checkAuth();
+    });
+    
+    // 模拟登录状态检测
+    function checkAuth() {
+      const token = localStorage.getItem('token');
+      // 如果token存在，则认为用户已登录，显示“登出”，并显示私密入口
+      if(token) {
+        document.getElementById('authBtn').innerText = '登出';
+        document.getElementById('privateEntry').style.display = 'block';
+      } else {
+        document.getElementById('authBtn').innerText = '登录';
+        document.getElementById('privateEntry').style.display = 'none';
+      }
+    }
+    
+    // 登录/登出操作
+    function authAction() {
+      const token = localStorage.getItem('token');
+      if(token) {
+        // 模拟登出：删除token，重设按钮文字
+        localStorage.removeItem('token');
+        alert('已登出');
+      } else {
+        // 模拟登录：跳转到登录页面（你也可以在弹窗中输入用户名密码）
+        window.location.href = 'login.html';
+        return;
+      }
+      checkAuth();
+    }
+    
+    // 模拟调用需要登录才能访问的私密接口
+    function fetchPrivateData() {
+      const token = localStorage.getItem('token');
+      if(!token) {
+        alert('请先登录');
+        return;
+      }
+      // 此处调用私密数据接口，示例使用 fetch 调用后端接口（需要配置 Authorization 头）
+      fetch('/private/data', {  // 假设后端接口为 /private/data
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        alert('私密数据：' + JSON.stringify(data));
+      })
+      .catch(error => {
+        console.error('请求失败:', error);
+      });
+    }
+  </script>
+</body>
+</html>

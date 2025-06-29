@@ -1,0 +1,82 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 40px;
+  margin: 0; /* 避免默认的 margin 影响布局 */
+}
+nav {
+  background: #ff69b4; /* 亮粉色 */
+  color: #fff;
+  padding: 0 40px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+nav .logo {
+  font-size: 22px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+nav .right-area {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.dropdown {
+  position: relative;      /* 确保绝对定位的参考父容器 */
+  display: inline-block;
+}
+.dropdown > button {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 8px 12px;
+}
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 100%;               /* 紧贴按钮下方 */
+  right: 0;
+  background-color: #fff;
+  min-width: 160px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 1;
+  border-radius: 4px;
+}
+.dropdown-content a {
+  color: #333;
+  padding: 10px 16px;
+  text-decoration: none;
+  display: block;
+}
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+.auth-btn {
+  background: transparent;
+  border: 1px solid #fff;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.auth-btn:hover {
+  background: rgba(255,255,255,0.2);
+}
+/* 给内容留出足够的顶部间距，确保不被固定导航覆盖 */
+.main-content {
+  margin-top: 72px;
+}

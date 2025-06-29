@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+  <title>博客管理</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    /* 页面其他样式（如表单、博客列表等） */
+    body {
+      padding-top: 72px; /* 防止内容被固定顶栏遮挡 */
+    }
+    /* 其它局部样式定义，保持风格一致 */
+    h1, h2, h3 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        input, textarea {
+            width: 300px;
+            padding: 5px;
+        }
+        /* 只影响内容区按钮，不影响顶栏 */
+        .main-content button {
+            margin-top: 10px;
+            padding: 8px 15px;
+        }
+        .blog-item {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .blog-actions button {
+            margin-right: 5px;
+        }
+  </style>
+</head>
+<body>
+  <div id="headerContainer"></div>
+  <div class="main-content">
+    <h1>博客管理</h1>
+    <!-- 新增博客表单 -->
+    <section>
+        <h2>新增博客</h2>
+        <form id="createBlogForm">
+            <label>ID:
+                <input type="number" name="id" required>
+            </label>
+            <label>标题:
+                <input type="text" name="title" required>
+            </label>
+            <label>内容:
+                <textarea name="content" rows="4" required></textarea>
+            </label>
+            <label>作者:
+                <input type="text" name="author">
+            </label>
+            <button type="submit">新增博客</button>
+        </form>
+    </section>
+    
+    <!-- 博客列表 -->
+    <section>
+        <h2>博客列表</h2>
+        <div id="blogsContainer"></div>
+    </section>
+  </div>
+  
+    <script>
+        // 后端 API 地址
+        const apiBase = "http://127.0.0.1:8000/blogs";
+        
+        // 获取所有博客并展示
+        async function loadBlogs() {
+            try {
+                const response = await fetch(apiBase + "/");
+                const blogs = await response.json();
+                const container = document.getElementById("blogsContainer");
+                container.innerHTML = "";
+                blogs.forEach(blog => {
+                    const div = document.createElement("div");
+                    div.className = "blog-item";
+                    div.innerHTML = `
+                        <strong>ID:</strong> ${blog.id}<br>
+                        <strong>标题:</strong> ${blog.title}<br>
+                        <strong>内容:</strong> ${blog.content}<br>
+                        <strong>作者:</strong> ${blog.author || ""}<br>
+                        <div class="blog-actions">
+                            <button onclick="deleteBlog(${blog.id})">删除</button>
+                            <button onclick="showUpdateForm(${blog.id})">编辑</button>
+                        </div>
+                        <div id="updateForm-${blog.id}" style="display:none; margin-top:10px;">
+                            <h3>编辑博客</h3>
+                            <form onsubmit="return updateBlog(event, ${blog.id})">
+                                <label>标题:
+                                    <input type="text" name="title" value="${blog.title}" required>
+                                </label><br>
+                                <label>内容:
+                                    <textarea name="content" rows="3" required>${blog.content}</textarea>
+                                </label><br>
+                                <label>作者:
+                                    <input type="text" name="author" value="${blog.author || ''}">
+                                </label><br>
+                                <button type="submit">更新博客</button>
+                                <button type="button" onclick="hideUpdateForm(${blog.id})">取消</button>
+                            </form>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            } catch (err) {
+                console.error("加载博客失败", err);
+            }
+        }
+        
+        // 新增博客
+        document.getElementById("createBlogForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+            const blogData = {
+                id: Number(formData.get("id")),
+                title: formData.get("title"),
+                content: formData.get("content"),
+                author: formData.get("author")
+            };
+            try {
+                const response = await fetch(apiBase + "/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(blogData)
+                });
+                if (response.ok) {
+                    form.reset();
+                    loadBlogs();
+                } else {
+                    const error = await response.json();
+                    alert("错误: " + error.detail);
+                }
+            } catch (err) {
+                console.error("新增博客失败", err);
+                alert("请求失败");
+            }
+        });
+        
+        // 删除博客
+        async function deleteBlog(id) {
+            if (!confirm("确定删除这个博客吗？")) return;
+            try {
+                const response = await fetch(apiBase + "/" + id, {
+                    method: "DELETE"
+                });
+                if (response.ok) {
+                    loadBlogs();
+                } else {
+                    const error = await response.json();
+                    alert("删除失败: " + error.detail);
+                }
+            } catch (err) {
+                console.error("删除博客失败", err);
+            }
+        }
+        
+        // 显示编辑表单
+        function showUpdateForm(id) {
+            const formDiv = document.getElementById("updateForm-" + id);
+            formDiv.style.display = "block";
+        }
+        
+        function hideUpdateForm(id) {
+            const formDiv = document.getElementById("updateForm-" + id);
+            formDiv.style.display = "none";
+        }
+        
+        // 更新博客
+        async function updateBlog(event, id) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const blogData = {
+                id: id,
+                title: formData.get("title"),
+                content: formData.get("content"),
+                author: formData.get("author")
+            };
+            try {
+                const response = await fetch(apiBase + "/" + id, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(blogData)
+                });
+                if (response.ok) {
+                    hideUpdateForm(id);
+                    loadBlogs();
+                } else {
+                    const error = await response.json();
+                    alert("更新失败: " + error.detail);
+                }
+            } catch (err) {
+                console.error("更新博客失败", err);
+            }
+            return false;
+        }
+        
+        // 初始加载博客列表
+        loadBlogs();
+    </script>
+    <script>
+    // 加载公共顶栏
+    fetch('header.html')
+      .then(response => response.text())
+      .then(html => {
+         document.getElementById('headerContainer').innerHTML = html;
+         // 加载后调用登录状态检测（如果定义了checkAuth函数）
+         checkAuth && checkAuth();
+      })
+      .catch(err => console.error('加载 header 失败：', err));
+  </script>
+  <!-- 保留博客管理的其它JS代码 -->
+  <script>
+    // 此处放加载博客、处理表单等逻辑
+  </script>
+</body>
+</html>

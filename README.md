@@ -19,9 +19,4 @@ PT1 服务支持
 启动服务：uvicorn blog:app --reload
 
 PT2 测试
-
-代码测试软件postman
-
-在 Postman 中调用 FastAPI 的接口时，常用如下选项：
-
-GET（获取所有博客）选择 GET 方法 URL: http://127.0.0.1:8000/blogs/  ##详细格式见blog.py
+- 主页访问：[http://127.0.0.1:8000/static/index.html](http://127.0.0.1:8000/static/index.html)

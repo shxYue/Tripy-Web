@@ -1,22 +1,43 @@
 # Tripy-Web
 
-PT0 简介
+## PT0 简介
 
-Test items for the course
+Tripy-Web 是一个基于 FastAPI 的简单博客与小游戏演示项目，适合课程实验和前后端分离开发入门。
 
-代码基于python 3.13.5 fastapi 0.115.13 unicorn 0.34.3
+## PT1 服务支持
 
-运行前需要安装fastapi&uvicorn 
+### 环境要求
 
-PT1 服务支持
+- Python 3.13.5
+- FastAPI 0.115.13
+- Uvicorn 0.34.3
 
-安装fastapi：终端：pip install "fastapi[standard]"
+### 安装依赖
 
-安装uvicorn：终端：pip install uvicorn
+在终端执行：
 
-运行时先将终端定位到代码所在位置：使用命令：cd:\code\.vscode  #注意是你的电脑的代码所在文件夹路径
+```bash
+pip install "fastapi[standard]"
+pip install uvicorn
+pip install python-jose
+# 如需数据库支持再安装
+# pip install sqlalchemy
+```
+###启动服务
+打开终端，切换到项目根目录（如 d:\pycode\Tripy-Web）：
+cd d:\pycode\Tripy-Web
+启动 FastAPI 服务：
+uvicorn main:app --reload
+访问接口文档：
 
-启动服务：uvicorn blog:app --reload
+http://127.0.0.1:8000/docs
 
+访问前端页面（静态文件）：
+
+http://127.0.0.1:8000/static/index.html
 PT2 测试
-- 主页访问：[http://127.0.0.1:8000/static/index.html](http://127.0.0.1:8000/static/index.html)
+主页访问：http://127.0.0.1:8000/static/index.html
+博客管理：http://127.0.0.1:8000/static/blog_frontend.html
+冲浪小游戏：http://127.0.0.1:8000/static/surf_combined.html
+登录/注册：http://127.0.0.1:8000/static/login.html
+如有问题请在 issues 区反馈。

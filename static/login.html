@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+  <title>登录 - Tripy-Web</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    body { padding-top:72px; }
+    form { max-width:320px; margin:100px auto; }
+    label, input { display:block; width:100%; margin-bottom:12px; }
+    /* 仅影响内容区登录表单里的按钮 */
+    .main-content button {
+      width: 100%;
+      padding: 8px;
+    }
+    /* 登录页前端入口区样式 */
+    .entry-list {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 30px;
+    }
+    .entry {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 16px;
+      background: #f8f8f8;
+      width: 120px;
+      transition: box-shadow 0.2s;
+    }
+    .entry:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .entry-title { font-size: 16px; margin-bottom: 8px; }
+    .entry-desc { font-size: 12px; color: #666; }
+    .entry a { text-decoration: none; color: inherit; }
+  </style>
+</head>
+<body>
+  <div id="headerContainer"></div>
+  <div class="main-content">
+    <h1>登录</h1>
+    <form id="loginForm">
+      <label>用户名:<input name="username" required></label>
+      <label>密码:<input type="password" name="password" required></label>
+      <button type="submit">登录</button>
+    </form>
+    <!-- 注册入口 -->
+    <div class="entry-list">
+      <div class="entry">
+        <a href="/static/register.html">
+          <div class="entry-title">注册</div>
+          <div class="entry-desc">创建新账号</div>
+        </a>
+      </div>
+    </div>
+  </div>
+  <script>
+    // 注入统一顶栏
+    fetch('header.html').then(r=>r.text()).then(html=>{
+      document.getElementById('headerContainer').innerHTML=html;
+      checkAuth&&checkAuth();
+    });
+  </script>
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async e=>{
+      e.preventDefault();
+      const fd=new FormData(e.target);
+      const params=new URLSearchParams();
+      params.append('username', fd.get('username'));
+      params.append('password', fd.get('password'));
+      const res = await fetch('http://127.0.0.1:8000/auth/login', {
+        method: 'POST',
+        headers: {'Content-Type':'application/x-www-form-urlencoded'},
+        body: params
+      });
+      if(res.ok){
+        const { access_token } = await res.json();
+        localStorage.setItem('token', access_token);
+        window.location.href = '/index.html';
+      } else {
+        const err = await res.json();
+        alert('登录失败：' + err.detail);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,17 +1,17 @@
 from typing import List, Optional
-from models import Blog
+from app.schemas import BlogSchema   # 将 Pydantic 模型 BlogSchema 当作 Blog 引入
 
 class BlogStore:
-    def get_all(self) -> List[Blog]:
+    def get_all(self) -> List[BlogSchema]:
         raise NotImplementedError()
 
-    def create_blog(self, blog: Blog) -> Blog:
+    def create_blog(self, blog: BlogSchema) -> BlogSchema:
         raise NotImplementedError()
 
-    def get_blog(self, blog_id: int) -> Optional[Blog]:
+    def get_blog(self, blog_id: int) -> Optional[BlogSchema]:
         raise NotImplementedError()
 
-    def update_blog(self, blog_id: int, new_blog: Blog) -> Blog:
+    def update_blog(self, blog_id: int, new_blog: BlogSchema) -> BlogSchema:
         raise NotImplementedError()
 
     def delete_blog(self, blog_id: int) -> None:
@@ -20,24 +20,24 @@ class BlogStore:
 
 class MemoryBlogStore(BlogStore):
     def __init__(self):
-        self.blogs: List[Blog] = []
+        self.blogs: List[BlogSchema] = []
 
-    def get_all(self) -> List[Blog]:
+    def get_all(self) -> List[BlogSchema]:
         return self.blogs
 
-    def create_blog(self, blog: Blog) -> Blog:
+    def create_blog(self, blog: BlogSchema) -> BlogSchema:
         if any(b.id == blog.id for b in self.blogs):
             raise Exception("Blog with this id already exists")
         self.blogs.append(blog)
         return blog
 
-    def get_blog(self, blog_id: int) -> Optional[Blog]:
+    def get_blog(self, blog_id: int) -> Optional[BlogSchema]:
         for blog in self.blogs:
             if blog.id == blog_id:
                 return blog
         return None
 
-    def update_blog(self, blog_id: int, new_blog: Blog) -> Blog:
+    def update_blog(self, blog_id: int, new_blog: BlogSchema) -> BlogSchema:
         for idx, blog in enumerate(self.blogs):
             if blog.id == blog_id:
                 self.blogs[idx] = new_blog

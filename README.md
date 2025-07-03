@@ -82,3 +82,30 @@ PT2 测试
 恐龙游戏：http://127.0.0.1:8000/static/pages/dino_game.html
 登录/注册：http://127.0.0.1:8000/static/pages/login.html
 如有问题请在 issues 区反馈。
+### 主要文件夹结构说明
+
+```
+Tripy-Web/
+├── main.py                # FastAPI 主入口
+├── blog.py                # 博客相关后端逻辑
+├── db.py                  # 数据库相关操作
+├── models.py              # 数据模型定义
+├── static/                # 前端静态资源（HTML/CSS/JS）
+│   ├── index.html         # 主页
+│   ├── blog_frontend.html # 博客前端页面
+│   ├── surf_combined.html # 冲浪小游戏页面
+│   └── ...
+├── __pycache__/           # Python 编译缓存
+├── 测试/                  # 测试相关文件
+├── README.md              # 项目说明文档
+└── ...
+```
+
+- 后端代码集中在根目录及 app/ 子目录（如有）。
+- 静态资源统一放在 static/ 文件夹，便于前后端分离。
+- 推荐使用虚拟环境（如 venv）管理依赖，避免全局污染。
+- 代码和文档建议定期同步至远程仓库（如 GitHub）。
+
+如有问题请在 issues 区反馈。
+
+---

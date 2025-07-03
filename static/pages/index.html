@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+  <title>Tripy-Web 主页面</title>
+  <!-- 引入全局 CSS -->
+  <link rel="stylesheet" href="/static/css/common.css">
+</head>
+<body>
+  <!-- 顶栏容器 -->
+  <div id="headerContainer"></div>
+
+  <!-- 页面内容 -->
+  <div class="content-wrapper">
+    <div class="page-content">
+      <h1>Tripy-Web 主页面</h1>
+      <div class="entry-list">
+        <div class="entry">
+          <div class="entry-title">欢迎页</div>
+          <div class="entry-desc">这里显示一些公开信息</div>
+        </div>
+        <div class="entry hidden" id="privateEntry">
+          <div class="entry-title">私密数据</div>
+          <div class="entry-desc">只有登录后可以访问</div>
+          <button id="privateEntryBtn">获取私密数据</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 页脚 -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-section">
+        <h3>快速访问</h3>
+        <ul>
+          <li><a href="/static/pages/login.html">登录</a></li>
+          <li><a href="/static/pages/blog_frontend.html">博客</a></li>
+          <li><a href="/static/pages/dino_game.html">小游戏</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>服务支持</h3>
+        <ul>
+          <li><a href="mailto:Lifuyve@outlook.com">联系客服邮箱</a></li>
+          <li><a href="https://github.com/shxYue/Tripy-Web/issues" target="_blank">问题反馈</a></li>
+          <li><a href="/static/pages/help.html">帮助中心</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>关于我们</h3>
+        <ul>
+          <li><a href="/static/pages/about.html">项目介绍</a></li>
+          <li><a href="https://github.com/shxYue/Tripy-Web" target="_blank">GitHub 仓库</a></li>
+          <li><a href="/static/pages/contact.html">联系我们</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 引入通用脚本 -->
+  <script src="/static/js/common.js"></script>
+</body>
+</html>

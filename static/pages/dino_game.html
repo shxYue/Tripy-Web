@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+  <title>小恐龙跳跃游戏</title>
+  <!-- 样式改为新的 css 目录 -->
+  <link rel="stylesheet" href="/static/css/common.css">
+  <style>
+    /* 整体拉满全屏 */
+    html, body { margin:0; padding:0; width:100%; height:100%; }
+    #gameContainer { position:relative; width:100%; height:100vh; overflow:hidden; }
+
+    /* 删除 #canvas 的固定宽高，由 JS 动态控制 */
+    #canvas {
+      background: #f7f7f7;
+      display: block;
+      border: none;
+    }
+
+    /* 分数、结束提示位置不用改，大小交给 JS */
+    #score {
+      position: absolute;
+      top: 10%;        /* 距离顶部 10% */
+      left: 50%;       /* 水平居中 */
+      transform: translateX(-50%);
+      color: #333;
+      /* 其余样式（如 font-size）由 JS 动态设置 */
+    }
+    #gameOver {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #333;
+      display: none;
+      text-align: center;
+    }
+    #gameOver button { margin-top: 16px; padding: 12px 24px; }
+
+    /* 排行榜样式 */
+    #leaderboard {
+      margin: 20px auto;
+      text-align: center;
+      color: #333;
+    }
+    #leaderboard h3 {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    #leaderboard div {
+      font-size: 16px;
+      margin: 4px 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="headerContainer"></div>
+  <div id="gameContainer">
+    <canvas id="canvas"></canvas>
+    <div id="score">得分: 0</div>
+    <div id="gameOver">
+      <div>游戏结束</div>
+      <button onclick="resetGame()">重新开始</button>
+    </div>
+  </div>  <!-- gameContainer 结束 -->
+  <div id="leaderboard" style="margin:20px auto; text-align:center;"></div>
+  <!-- 通用脚本改为新的 js 目录 -->
+  <script src="/static/js/common.js"></script>
+  <script>
+    // 图片资源改为新的 img 目录
+    const dinoImg = new Image();    dinoImg.src    = '/static/img/dino.png';
+    const cactusImg = new Image();  cactusImg.src = '/static/img/cactus.png';
+    
+    // 以下游戏逻辑保持不变
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const scoreEl = document.getElementById('score');
+    const overEl = document.getElementById('gameOver');
+
+    // 统一缩放系数
+    const SCALE = 6.0;
+
+    // 逻辑用尺寸
+    const groundHeight = 20 * SCALE;
+
+    // dino & 障碍物初始化
+    const dino = {
+      x: 50,
+      w: 40 * SCALE,
+      h: 40 * SCALE,
+      y: 0, vy: 0,
+      gravity: 0.6 * SCALE,
+      jumpForce: 12 * SCALE,
+      grounded: false,
+      baseY: 0
+    };
+    let obstacles = [], frame=0, score=0, speed=6*SCALE, spawnTimer=0, gameActive=true;
+
+    function resizeCanvas(){
+      // 减去 header 高度
+      const hdr = document.getElementById('headerContainer');
+      const hh = hdr ? hdr.clientHeight : 0;
+
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight - hh;
+      // 更新地面并重新计算 dino 基准 y
+      const groundY = canvas.height - groundHeight;
+      dino.baseY = groundY - dino.h;
+      if (dino.grounded) dino.y = dino.baseY;
+
+      // 更新 UI 字号
+      scoreEl.style.fontSize = `${(16 * SCALE)}px`;
+      overEl.style.fontSize = `${(24 * SCALE)}px`;
+      overEl.querySelector('button').style.fontSize = `${(14 * SCALE)}px`;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function resetGame(){
+      obstacles=[]; frame=0; score=0; speed=6*SCALE; spawnTimer=0; gameActive=true;
+      dino.vy=0; dino.grounded=true; dino.y=dino.baseY;
+      overEl.style.display='none';
+      requestAnimationFrame(update);
+    }
+    function spawnObstacle(){
+      const h0 = 20 + Math.random()*30;
+      const h = h0 * SCALE;
+      const groundY = canvas.height - groundHeight;
+      obstacles.push({ x:canvas.width, y:groundY - h, w:20*SCALE, h, passed:false });
+    }
+
+    function update(){
+      if (!gameActive) return;
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+
+      // draw ground
+      ctx.fillStyle='#888';
+      const groundY = canvas.height - groundHeight;
+      ctx.fillRect(0, groundY, canvas.width, groundHeight);
+
+      // dino 物理 & 绘制
+      dino.vy += dino.gravity;
+      dino.y += dino.vy;
+      if (dino.y > dino.baseY) {
+        dino.y = dino.baseY; dino.vy=0; dino.grounded=true;
+      }
+      if (dinoImg.complete) {
+        ctx.drawImage(dinoImg, dino.x, dino.y, dino.w, dino.h);
+      }
+
+      // spawn & draw obstacles
+      if (--spawnTimer <= 0) {
+        spawnObstacle();
+        spawnTimer = 80 + Math.random()*80;
+      }
+      obstacles.forEach(o=>{
+        o.x -= speed;
+        if (cactusImg.complete) {
+          ctx.drawImage(cactusImg, o.x, o.y, o.w, o.h);
+        }
+        // collision
+        if (dino.x < o.x+o.w && dino.x+dino.w > o.x &&
+            dino.y < o.y+o.h && dino.y+dino.h > o.y) {
+          gameActive=false; overEl.style.display='block'; postScoreAndShow();
+        }
+        if (!o.passed && o.x+o.w < dino.x) {
+          o.passed=true; score++; speed+=0.2*SCALE;
+        }
+      });
+
+      scoreEl.innerText = '得分: ' + score;
+      if (gameActive) requestAnimationFrame(update);
+    }
+
+    // 跳跃
+    document.addEventListener('keydown', e=>{
+      if ((e.key===' '||e.key==='ArrowUp'||e.key==='w') && dino.grounded) {
+        dino.grounded=false;
+        if (window.gsap) {
+          gsap.to(dino, {
+            y: dino.baseY - 80*SCALE,
+            duration:0.35, ease:"power2.out",
+            onComplete: ()=>gsap.to(dino,{ y:dino.baseY, duration:0.4, ease:"bounce.out",
+              onComplete: ()=>dino.grounded=true })
+          });
+        } else {
+          dino.vy = -dino.jumpForce;
+        }
+      }
+    });
+
+    // 启动
+    resetGame();
+  
+    // 提交分数并渲染排行榜
+    async function postScoreAndShow() {
+      try {
+        await authFetch('/dino/score', {
+          method: 'POST',
+          body: JSON.stringify({ score }),
+        });
+        await showLeaderboard();
+      } catch (e) { console.error(e); }
+    }
+
+    async function showLeaderboard(limit = 10) {
+      try {
+        const res = await authFetch(`/dino/leaderboard?limit=${limit}`);
+        const list = await res.json();
+        const lb = document.getElementById('leaderboard');
+        lb.innerHTML = '<h3>排行榜</h3>' + list.map(e => `<div>${e.username}: ${e.score}</div>`).join('');
+      } catch (e) { console.error(e); }
+    }
+    // 页面加载时渲染排行榜
+    showLeaderboard();
+  </script>
+</body>
+</html>

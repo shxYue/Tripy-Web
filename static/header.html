@@ -3,17 +3,52 @@
     <div class="logo">Tripy-Web</div>
     <div class="right-area">
       <!-- 首页按钮 -->
-      <a href="index.html" class="home-link" style="color:#fff; text-decoration:none; font-size:16px; padding:8px 12px;">首页</a>
+      <a href="/static/pages/index.html" class="home-link"
+         style="color:#fff; text-decoration:none; font-size:16px; padding:8px 12px;">
+        首页
+      </a>
       <!-- 功能下拉菜单 -->
       <div class="dropdown">
         <button>功能菜单 ▾</button>
-        <div class="dropdown-content">
-          <a href="blog_frontend.html">博客管理</a>
-          <a href="surf_combined.html">冲浪小游戏</a>
+        <div class="dropdown-content" id="dropdownContent" style="
+          display:none;
+          position:absolute;
+          top:100%;
+          right:0;
+          background:#fff;
+          min-width:160px;
+          box-shadow:0 2px 8px rgba(0,0,0,0.15);
+          border-radius:4px;
+          z-index:1;
+        ">
+          <a href="/static/pages/blog_frontend.html"
+             style="display:block;color:#333;padding:10px 16px;text-decoration:none;">
+            博客管理
+          </a>
+          <a href="/static/pages/dino_game.html" style="display:block;color:#333;padding:10px 16px;text-decoration:none;">
+            小恐龙跳跃游戏
+          </a>
+          <!-- 给用户管理加上 id，便于控制可见性 -->
+          <a id="adminLink" href="/static/pages/admin.html"
+             style="display:block;color:#333;padding:10px 16px;text-decoration:none;">
+            用户管理
+          </a>
         </div>
       </div>
       <!-- 登录/登出按钮 -->
-      <a id="authBtn" class="auth-btn" href="/static/login.html">登录</a>
+      <a id="authBtn" class="auth-btn" href="/static/pages/login.html"
+         style="background:transparent;border:1px solid #fff;color:#fff;
+                padding:8px 12px;border-radius:4px;cursor:pointer;transition:background 0.2s;">
+        登录
+      </a>
     </div>
   </nav>
 </div>
+
+<script>
+  // 下拉菜单交互
+  const dd = document.querySelector('#siteHeader .dropdown');
+  const dc = document.getElementById('dropdownContent');
+  dd.addEventListener('mouseenter', () => dc.style.display = 'block');
+  dd.addEventListener('mouseleave', () => dc.style.display = 'none');
+</script>

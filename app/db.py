@@ -1,5 +1,23 @@
 from typing import List, Optional
 from app.schemas import BlogSchema   # 将 Pydantic 模型 BlogSchema 当作 Blog 引入
+from sqlalchemy.orm import Session
+from passlib.context import CryptContext
+from .models import User
+
+pwd_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def get_user(db: Session, username: str) -> User | None:
+    return db.query(User).filter(User.username == username).first()
+
+def create_user(db: Session, username: str, password: str) -> User:
+    user = User(
+        username=username,
+        hashed_password=pwd_ctx.hash(password)
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
 
 class BlogStore:
     def get_all(self) -> List[BlogSchema]:

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>登录 - Tripy-Web</title>
-  <link rel="stylesheet" href="common.css">
+  <link rel="stylesheet" href="/static/css/common.css">
   <style>
     body { padding-top:72px; }
     form { max-width:320px; margin:100px auto; }
@@ -38,49 +38,59 @@
   <div id="headerContainer"></div>
   <div class="main-content">
     <h1>登录</h1>
+    <!-- B. 登录表单，必须有 id="loginForm" -->
     <form id="loginForm">
       <label>用户名:<input name="username" required></label>
       <label>密码:<input type="password" name="password" required></label>
       <button type="submit">登录</button>
     </form>
+
     <!-- 注册入口 -->
     <div class="entry-list">
       <div class="entry">
-        <a href="/static/register.html">
+        <a href="/static/pages/register.html">
           <div class="entry-title">注册</div>
           <div class="entry-desc">创建新账号</div>
         </a>
       </div>
     </div>
   </div>
+  <script src="/static/js/common.js"></script>
   <script>
-    // 注入统一顶栏
-    fetch('header.html').then(r=>r.text()).then(html=>{
-      document.getElementById('headerContainer').innerHTML=html;
-      checkAuth&&checkAuth();
-    });
-  </script>
-  <script>
-    document.getElementById('loginForm').addEventListener('submit', async e=>{
+    // 登录表单提交处理：优先检测代码内 admin 账号
+    document.getElementById("loginForm").onsubmit = async function(e) {
       e.preventDefault();
-      const fd=new FormData(e.target);
-      const params=new URLSearchParams();
-      params.append('username', fd.get('username'));
-      params.append('password', fd.get('password'));
-      const res = await fetch('http://127.0.0.1:8000/auth/login', {
-        method: 'POST',
-        headers: {'Content-Type':'application/x-www-form-urlencoded'},
+      const form = e.target;
+      const username = form.username.value;
+      const password = form.password.value;
+     // ← 硬编码管理员凭据
+     const ADMIN_USER = "admin", ADMIN_PWD = "admin123";
+     if (username === ADMIN_USER && password === ADMIN_PWD) {
+       localStorage.setItem("admin_token", "admin-token");
+       localStorage.removeItem("access_token");
+       return window.location.href = "/static/pages/admin.html";
+     }
+      const params = new URLSearchParams();
+      params.append("grant_type", "password");
+      params.append("username", username);
+      params.append("password", password);
+      const res = await fetch("http://127.0.0.1:8000/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: params
       });
-      if(res.ok){
-        const { access_token } = await res.json();
-        localStorage.setItem('token', access_token);
-        window.location.href = '/index.html';
+      const data = await res.json();
+      if (res.ok) {
+        // 保存 token 并根据角色跳转
+        localStorage.setItem("access_token", data.access_token);
+        const payload = parseJwt(data.access_token);
+        window.location.href = payload.role === "admin"
+          ? "/static/pages/admin.html"
+          : "/static/pages/blog_frontend.html";
       } else {
-        const err = await res.json();
-        alert('登录失败：' + err.detail);
+        alert("登录失败: " + (data.detail || res.statusText));
       }
-    });
+    };
   </script>
 </body>
 </html>

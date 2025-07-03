@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin 用户管理</title>
+    <link rel="stylesheet" href="/static/css/common.css">
+    <style>
+      body { padding-top:72px; }
+      table { width:100%; border-collapse:collapse; margin:20px auto; max-width:600px; }
+      th, td { border:1px solid #ccc; padding:8px 12px; text-align:left; }
+      th { background:#f0f0f0; }
+    </style>
+</head>
+<body>
+  <div id="headerContainer"></div>
+  <div class="main-content">
+    <h1>用户管理</h1>
+    <table id="userTable">
+      <thead>
+        <tr><th>ID</th><th>用户名</th><th>激活</th></tr>
+      </thead>
+      <tbody id="usersBody"></tbody>
+    </table>
+  </div>  <!-- 用户管理结束 -->
+  <div class="main-content">
+    <h1>博客管理</h1>
+    <table id="blogsTable">
+      <thead><tr><th>ID</th><th>标题</th><th>内容</th><th>作者</th><th>操作</th></tr></thead>
+      <tbody id="blogsBody"></tbody>
+    </table>
+  </div>
+  <div class="main-content">
+    <h1>游戏最高分管理</h1>
+    <table id="scoresTable">
+      <thead><tr><th>用户名</th><th>最高分</th><th>操作</th></tr></thead>
+      <tbody id="scoresBody"></tbody>
+    </table>
+  </div>
+  <script src="/static/js/common.js"></script>
+  <script>
+    (async function(){
+      // 非管理员无法访问（基于 admin_token）
+      const adminToken = localStorage.getItem("admin_token");
+      if (!adminToken) {
+        alert("请先以管理员账号登录");
+        window.location.href = "/static/pages/login.html";
+        return;
+      }
+      // 获取用户列表
+      const res = await authFetch("/admin/users");
+      if (!res.ok) {
+        alert("加载失败");
+        return;
+      }
+      const users = await res.json();
+      const tbody = document.getElementById("usersBody");
+      tbody.innerHTML = "";
+      users.forEach(u => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${u.id}</td><td>${u.username}</td><td>${u.is_active}</td>`;
+        tbody.appendChild(tr);
+      });
+      // 加载博客列表
+      const blogsRes = await authFetch('/admin/blogs');
+      if (blogsRes.ok) {
+        const blogs = await blogsRes.json();
+        const bb = document.getElementById('blogsBody');
+        bb.innerHTML = '';
+        blogs.forEach(b => {
+          const tr2 = document.createElement('tr');
+          tr2.innerHTML = `<td>${b.id}</td><td>${b.title}</td><td>${b.content}</td><td>${b.author}</td><td><button onclick="editBlog(${b.id}, '${b.title}', '${b.content}', '${b.author}')">编辑</button></td>`;
+          bb.appendChild(tr2);
+        });
+      }
+      // 加载分数列表
+      const scoresRes = await authFetch('/admin/scores');
+      if (scoresRes.ok) {
+        const scores = await scoresRes.json();
+        const sb = document.getElementById('scoresBody');
+        sb.innerHTML = '';
+        scores.forEach(s => {
+          const tr3 = document.createElement('tr');
+          tr3.innerHTML = `<td>${s.username}</td><td><span id="score-${s.username}">${s.score}</span></td><td><button onclick="updateScore('${s.username}')">修改</button></td>`;
+          sb.appendChild(tr3);
+        });
+      }
+      // 全局编辑函数
+      window.editBlog = async function(id, title, content, author) {
+        const newTitle = prompt('新标题', title);
+        const newContent = prompt('新内容', content);
+        if (newTitle != null && newContent != null) {
+          const res = await authFetch(`/admin/blogs/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({ id, title: newTitle, content: newContent, author })
+          });
+          if (res.ok) location.reload(); else alert('更新博客失败');
+        }
+      };
+      window.updateScore = async function(username) {
+        const newScore = parseInt(prompt('新分数')); if (isNaN(newScore)) return;
+        const res = await authFetch(`/admin/scores/${username}`, {
+          method: 'PUT',
+          body: JSON.stringify({ score: newScore })
+        });
+        if (res.ok) document.getElementById(`score-${username}`).innerText = newScore;
+        else alert('更新分数失败');
+      };
+   })();
+  </script>
+</body>
+</html>

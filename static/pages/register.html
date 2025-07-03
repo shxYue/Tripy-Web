@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+  <title>注册 - Tripy-Web</title>
+  <link rel="stylesheet" href="/static/css/common.css">
+  <style>
+    body { padding-top:72px; }
+    form { max-width:320px; margin:100px auto; }
+    label, input, select { display:block; width:100%; margin-bottom:12px; }
+    .main-content button { width:100%; padding:8px; }
+  </style>
+</head>
+<body>
+  <div id="headerContainer"></div>
+  <div class="main-content">
+    <h1>注册</h1>
+    <form id="registerForm">
+      <label>用户名:<input name="username" required></label>
+      <label>密码:<input type="password" name="password" required></label>
+      <button type="submit">注册</button>
+    </form>
+  </div>
+  <script src="/static/js/common.js"></script>
+  <script>
+    // 注册后询问是否直接登录
+    document.getElementById("registerForm").onsubmit = async function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const username = form.username.value;
+      const password = form.password.value;
+      try {
+        const res = await fetch("/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          if (confirm("注册成功，是否直接登录？")) {
+            localStorage.setItem("access_token", data.access_token);
+            window.location.href = "/static/pages/index.html";
+          } else {
+            alert("请前往登录页面登录");
+          }
+        } else {
+          alert("注册失败: " + (data.detail || res.statusText));
+        }
+      } catch (err) {
+        console.error("注册异常", err);
+        alert("注册异常，请稍后重试");
+      }
+    };
+  </script>
+</body>
+</html>

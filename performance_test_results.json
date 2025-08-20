@@ -1,0 +1,80 @@
+{
+  "basic_endpoints": {
+    "GET /": {
+      "status_code": 200,
+      "response_time": 0.003449678421020508,
+      "content_length": 1833,
+      "success": true,
+      "headers": {
+        "Date": "Wed, 20 Aug 2025 12:46:32 GMT",
+        "Server": "uvicorn",
+        "Content-Type": "text/html; charset=utf-8",
+        "Accept-Ranges": "bytes",
+        "Last-Modified": "Wed, 20 Aug 2025 12:29:54 GMT",
+        "Etag": "\"e6478324afe0dad179091684270fe184\"",
+        "x-process-time": "0.0006990432739257812",
+        "Vary": "Accept-Encoding",
+        "Content-Encoding": "gzip",
+        "Transfer-Encoding": "chunked"
+      }
+    },
+    "GET /health": {
+      "status_code": 200,
+      "response_time": 0.0009109973907470703,
+      "content_length": 55,
+      "success": true,
+      "headers": {
+        "Date": "Wed, 20 Aug 2025 12:46:32 GMT",
+        "Server": "uvicorn",
+        "Content-Type": "application/json",
+        "x-process-time": "0.0002028942108154297",
+        "Vary": "Accept-Encoding",
+        "Content-Encoding": "gzip",
+        "Transfer-Encoding": "chunked"
+      }
+    },
+    "GET /static/pages/index.html": {
+      "status_code": 200,
+      "response_time": 0.0014750957489013672,
+      "content_length": 1833,
+      "success": true,
+      "headers": {
+        "Date": "Wed, 20 Aug 2025 12:46:32 GMT",
+        "Server": "uvicorn",
+        "Content-Type": "text/html; charset=utf-8",
+        "Accept-Ranges": "bytes",
+        "Last-Modified": "Wed, 20 Aug 2025 12:29:54 GMT",
+        "Etag": "\"e6478324afe0dad179091684270fe184\"",
+        "x-process-time": "0.0005621910095214844",
+        "Vary": "Accept-Encoding",
+        "Content-Encoding": "gzip",
+        "Transfer-Encoding": "chunked"
+      }
+    }
+  },
+  "health_load_test": {
+    "total_requests": 3240,
+    "successful_requests": 109,
+    "failed_requests": 3131,
+    "success_rate": 3.364197530864198,
+    "avg_response_time": 0.0014587471514572333,
+    "min_response_time": 0.0004000663757324219,
+    "max_response_time": 0.004720926284790039,
+    "median_response_time": 0.0014051198959350586,
+    "requests_per_second": 324.0,
+    "stddev_response_time": 0.0007112237273825564
+  },
+  "static_load_test": {
+    "total_requests": 6465,
+    "successful_requests": 0,
+    "failed_requests": 6465,
+    "success_rate": 0.0,
+    "avg_response_time": 0.0016264385524316066,
+    "min_response_time": 0.0004551410675048828,
+    "max_response_time": 0.02142643928527832,
+    "median_response_time": 0.0015883445739746094,
+    "requests_per_second": 646.5,
+    "stddev_response_time": 0.0009245212065290875
+  },
+  "timestamp": 1755694012.651173
+}

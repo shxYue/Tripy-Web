@@ -12,31 +12,43 @@ function parseJwt(token) {
 // 更新顶栏的登录状态及管理员菜单可见性
 function updateAuthState() {
   const token = localStorage.getItem("access_token");
-  const adminToken = localStorage.getItem("admin_token");       // ← 新增
+  const adminToken = localStorage.getItem("admin_token");
   const authBtn = document.getElementById("authBtn");
+  
   if (authBtn) {
     if (adminToken || token) {
       authBtn.textContent = "退出";
       authBtn.href = "javascript:logout()";
+      authBtn.onclick = logout; // 确保点击事件正确绑定
     } else {
       authBtn.textContent = "登录";
       authBtn.href = "/static/pages/login.html";
+      authBtn.onclick = null;
     }
   }
+  
   // 控制管理员链接显示
   const adminLink = document.getElementById("adminLink");
   if (adminLink) {
-    adminLink.style.display = adminToken ? "block" : "none";    // ← 基于 admin_token
+    adminLink.style.display = adminToken ? "block" : "none";
   }
+  
   // 控制个人中心链接显示
   const profileLink = document.getElementById("profileLink");
   if (profileLink) {
     profileLink.style.display = token ? "block" : "none";
   }
+  
   // 控制顶栏按钮可见性
   const profileBtn = document.getElementById("profileBtn");
   if (profileBtn) {
     profileBtn.style.display = token ? "inline-block" : "none";
+  }
+  
+  // 如果在个人中心页面且未登录，跳转到登录页
+  if (window.location.pathname.includes('/profile.html') && !token && !adminToken) {
+    alert('请先登录访问个人中心');
+    window.location.href = '/static/pages/login.html';
   }
 }
 

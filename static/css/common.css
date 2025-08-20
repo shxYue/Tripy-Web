@@ -1,32 +1,75 @@
-/* 登录页字体白色 */
+/* 登录页字体和背景优化 */
 .login-content, .login-content * {
-  color: #fff !important;
+  color: #333 !important;
 }
-/* 注册界面字体黑色 */
+.login-content form {
+  background: rgba(255, 255, 255, 0.95) !important;
+  padding: 30px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+  backdrop-filter: blur(10px) !important;
+}
+/* 注册界面字体和背景优化 */
 .register-content, .register-content *, .register-form, .register-form * {
-  color: #111 !important;
+  color: #333 !important;
+}
+.register-content form, .register-form {
+  background: rgba(255, 255, 255, 0.95) !important;
+  padding: 30px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+/* 登录和注册页面输入框样式 */
+.login-content input, .register-content input, .register-form input {
+  background: #fff !important;
+  color: #333 !important;
+  border: 2px solid #e1e5e9 !important;
+}
+.login-content input:focus, .register-content input:focus, .register-form input:focus {
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+}
+.login-content label, .register-content label, .register-form label {
+  color: #333 !important;
+  font-weight: 500 !important;
 }
 /* -------------------- Reset -------------------- */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  /* color: #111 !important; */
-  /* 全局字体蓝色描边 */
-  text-shadow:
-    1px 1px 0 #2196f3,
-    -1px 1px 0 #2196f3,
-    1px -1px 0 #2196f3,
-    -1px -1px 0 #2196f3,
-    0 1px 0 #2196f3,
-    1px 0 0 #2196f3,
-    0 -1px 0 #2196f3,
-    -1px 0 0 #2196f3;
+  /* 简约字体设置 */
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+/* 全局字体优化 */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 300;
+  line-height: 1.4;
+  margin-bottom: 0.5em;
+}
+
+p, span, div {
+  line-height: 1.6;
+}
+
+a {
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
 }
 
 /* -------------------- Body -------------------- */
 body {
-  font-family: Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-weight: 300;
+  line-height: 1.6;
   min-height: 100vh;
   position: relative;
   color: #fff;
@@ -34,49 +77,16 @@ body {
   padding-top: 56px;
   display: flex;
   flex-direction: column;
+  /* 简约渐变背景 */
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: url('/static/img/codm1.jpg') no-repeat center center fixed;
 /* 个人中心专用背景和字体色 */
 .profile-bg {
-  background: url('/static/img/蓝色纱窗.png') no-repeat center center fixed !important;
-  background-size: cover !important;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
 }
 .profile-bg * {
   color: #111 !important;
-}
-  background-size: cover;
-  z-index: -1;
-  opacity: 1;
-}
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: url('/static/img/codm1.jpg') no-repeat center center fixed;
-  background-size: cover;
-  z-index: -1;
-  opacity: 1;
-}
-
-/* 非主页页面背景图片 */
-body:not(.home-page)::before {
-  background: url('/static/img/back1.webp') no-repeat center center fixed !important;
-  background-size: cover !important;
-}
-}
 }
 
 /* 全局布局，确保 footer 在底部 */
@@ -96,7 +106,7 @@ html, body {
   justify-content: space-between;
   align-items: center;
   height: 56px;
-  background: transparent;
+  background: rgba(0, 0, 0, 0.8);
   color: #fff;
   padding: 0 20px;
   position: fixed;
@@ -105,10 +115,12 @@ html, body {
   right: 0;
   z-index: 1000;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  backdrop-filter: blur(10px);
 }
 #siteHeader .logo {
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
 }
 #siteHeader .right-area {
   display: flex;
@@ -119,7 +131,8 @@ html, body {
 #siteHeader .auth-btn {
   color: #fff;
   text-decoration: none;
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 400;
   padding: 8px 12px;
   border-radius: 4px;
   cursor: pointer;
@@ -177,7 +190,9 @@ html, body {
 }
 .main-content h1 {
   margin-bottom: 20px;
-  font-size: 24px;
+  font-size: 28px;
+  font-weight: 300;
+  letter-spacing: 0.02em;
 }
 .main-content form {
   background: transparent;
@@ -192,30 +207,63 @@ html, body {
   background: transparent !important;
 }
 
-/* 博客创建栏字体白色（右侧栏） */
+/* 博客相关样式优化 */
 .blog-create-bar, .blog-create-bar * {
-  color: #fff !important;
+  color: #333 !important;
+}
+.blog-create-bar {
+  background: rgba(255, 255, 255, 0.95) !important;
+  padding: 20px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+  backdrop-filter: blur(10px) !important;
+  margin-bottom: 20px !important;
+}
+/* 博客列表样式 */
+.blog-list, .blog-item {
+  background: rgba(255, 255, 255, 0.95) !important;
+  color: #333 !important;
+  padding: 20px !important;
+  margin-bottom: 15px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+  backdrop-filter: blur(10px) !important;
+}
+.blog-list *, .blog-item * {
+  color: #333 !important;
 }
 .main-content label {
   display: block;
   margin-bottom: 12px;
   font-size: 14px;
-  color: #555;
+  font-weight: 400;
+  color: #fff;
 }
 .main-content input {
   width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 300;
+  background: #fff;
+  color: #333;
+}
+.main-content input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
 }
 .main-content button {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   background: #ff69b4;
   color: #fff;
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
   cursor: pointer;
   transition: background 0.2s;
 }
@@ -243,13 +291,17 @@ html, body {
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 .entry-title {
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 400;
   margin-bottom: 8px;
   color: #fff;
+  letter-spacing: 0.02em;
 }
 .entry-desc {
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: 300;
   color: #fff;
+  opacity: 0.9;
 }
 
 /* -------------------- 通用布局 -------------------- */
@@ -258,26 +310,74 @@ html, body {
 
 /* 页面容器 */
 /* 主内容区加半透明背景提升可读性 */
-/* 主内容区透明背景 */
 .page-content {
   margin: 20px auto;
   padding: 40px;
   text-align: center;
   max-width: 800px;
-  background: transparent;
-  border-radius: 0;
-  box-shadow: none;
-  color: #fff !important;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  color: #333 !important;
 }
-
-/* 博客创建栏字体白色 */
-.blog-create-bar, .blog-create-bar * {
-  color: #fff !important;
+.page-content * {
+  color: #333 !important;
 }
 
 /* 内容包装器 */
 .content-wrapper {
   margin-top: 72px;
+}
+
+/* 确保所有表单和内容区域的可读性 */
+form, .form-container, .content-section {
+  background: rgba(255, 255, 255, 0.95) !important;
+  padding: 20px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+  backdrop-filter: blur(10px) !important;
+  margin-bottom: 20px !important;
+}
+
+form *, .form-container *, .content-section * {
+  color: #333 !important;
+}
+
+/* 特殊情况：确保按钮文字可见 */
+button, .btn {
+  color: #fff !important;
+}
+
+/* 确保链接在白色背景上可见 */
+.page-content a, .blog-item a, form a {
+  color: #667eea !important;
+  text-decoration: underline !important;
+}
+
+.page-content a:hover, .blog-item a:hover, form a:hover {
+  color: #764ba2 !important;
+}
+
+/* 小游戏页面特殊样式 */
+body:has(#gameContainer) {
+  padding-top: 56px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 100vh !important;
+}
+
+#gameContainer {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+/* 小游戏页面的页脚样式调整 */
+body:has(#gameContainer) .footer {
+  margin-top: auto !important;
+  background: rgba(0, 0, 0, 0.8) !important;
+  backdrop-filter: blur(10px) !important;
 }
 
 /* -------------------- 页脚 Footer -------------------- */
@@ -300,9 +400,11 @@ html, body {
   flex: 1;
 }
 .footer-section h3 {
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 400;
   margin-bottom: 10px;
   color: #fff;
+  letter-spacing: 0.02em;
 }
 .footer-section ul {
   list-style: none;
@@ -314,6 +416,8 @@ html, body {
 .footer-section ul li a {
   color: #fff;
   text-decoration: none;
+  font-size: 14px;
+  font-weight: 300;
   transition: color 0.2s;
 }
 .footer-section ul li a:hover {

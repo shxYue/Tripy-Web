@@ -6,25 +6,63 @@
   <!-- 样式改为新的 css 目录 -->
   <link rel="stylesheet" href="/static/css/common.css">
   <style>
-    /* 整体拉满全屏 */
-    html, body { margin:0; padding:0; width:100%; height:100%; }
-    #gameContainer { position:relative; width:100%; height:100vh; overflow:hidden; }
+    /* 确保body有正确的padding-top，与其他页面保持一致 */
+    body {
+      padding-top: 56px !important;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    
+    /* 整体拉满全屏，但要留出顶栏和底栏空间 */
+    html, body { 
+      margin: 0; 
+      padding: 0; 
+      width: 100%; 
+      height: 100%; 
+    }
+    
+    #gameContainer { 
+      position: relative; 
+      width: 100%; 
+      height: 60vh; /* 限制游戏区域高度，为底部内容留空间 */
+      overflow: hidden; 
+      margin: 20px auto;
+      max-width: 1200px;
+      flex-shrink: 0; /* 防止被压缩 */
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
 
     /* 删除 #canvas 的固定宽高，由 JS 动态控制 */
     #canvas {
-      background: #f7f7f7;
+      background: linear-gradient(180deg, #87CEEB 0%, #98FB98 70%, #90EE90 100%);
       display: block;
       border: none;
+      width: 100%;
+      height: 100%;
+      border-radius: 12px;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
     }
 
-    /* 分数、结束提示位置不用改，大小交给 JS */
+    /* 分数显示美化 */
     #score {
       position: absolute;
-      top: 10%;        /* 距离顶部 10% */
-      left: 50%;       /* 水平居中 */
-      transform: translateX(-50%);
-      color: #333;
-      /* 其余样式（如 font-size）由 JS 动态设置 */
+      top: 15px;        
+      left: 20px;       
+      transform: none;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: bold;
+      z-index: 10;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255,255,255,0.3);
     }
     #gameOver {
       position: absolute;
@@ -34,22 +72,136 @@
       color: #333;
       display: none;
       text-align: center;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      backdrop-filter: blur(15px);
+      border: 2px solid rgba(255,255,255,0.5);
     }
-    #gameOver button { margin-top: 16px; padding: 12px 24px; }
+    #gameOver h2 {
+      margin-bottom: 15px;
+      color: #ff6b6b;
+      font-size: 24px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    #gameOver .final-score {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #667eea;
+      font-weight: bold;
+    }
+    #gameOver button { 
+      margin-top: 16px; 
+      padding: 12px 24px; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+    #gameOver button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
 
-    /* 排行榜样式 */
+    /* 底部内容区域 */
+    .bottom-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    /* 排行榜样式优化 */
     #leaderboard {
       margin: 20px auto;
       text-align: center;
       color: #333;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 25px;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(15px);
+      max-width: 450px;
+      flex-shrink: 0;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
     #leaderboard h3 {
-      font-size: 18px;
-      margin-bottom: 10px;
+      font-size: 20px;
+      margin-bottom: 15px;
+      color: #333;
+      font-weight: 500;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.1);
     }
-    #leaderboard div {
+    .leaderboard-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 15px;
+      margin: 8px 0;
+      background: rgba(102, 126, 234, 0.1);
+      border-radius: 8px;
       font-size: 16px;
-      margin: 4px 0;
+      color: #333;
+      transition: all 0.3s ease;
+      border-left: 4px solid #667eea;
+    }
+    .leaderboard-item:hover {
+      background: rgba(102, 126, 234, 0.2);
+      transform: translateX(5px);
+    }
+    .leaderboard-item.top-three {
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 165, 0, 0.1));
+      border-left-color: #ffd700;
+    }
+    .leaderboard-rank {
+      font-weight: bold;
+      color: #667eea;
+      min-width: 30px;
+    }
+    .leaderboard-name {
+      flex: 1;
+      text-align: left;
+      margin-left: 10px;
+    }
+    .leaderboard-score {
+      font-weight: bold;
+      color: #764ba2;
+    }
+
+    /* 页脚调整 */
+    .footer {
+      margin-top: auto;
+      flex-shrink: 0;
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+      #gameContainer {
+        height: 50vh; /* 移动设备上游戏区域稍小 */
+      }
+      
+      #leaderboard {
+        margin: 10px;
+        padding: 15px;
+      }
+      
+      .footer-container {
+        flex-direction: column;
+        gap: 20px;
+      }
+    }
+
+    @media (min-width: 1200px) {
+      #gameContainer {
+        height: 70vh; /* 大屏幕上可以给更多空间 */
+      }
     }
   </style>
 </head>
@@ -57,13 +209,59 @@
   <div id="headerContainer"></div>
   <div id="gameContainer">
     <canvas id="canvas"></canvas>
-    <div id="score">得分: 0</div>
-    <div id="gameOver">
-      <div>游戏结束</div>
-      <button onclick="resetGame()">重新开始</button>
+    <div id="score">🏃‍♂️ 得分: 0 | 速度: 1.5x</div>
+    <div id="gameOver"></div>
+    <div id="gameInstructions" style="
+      position: absolute;
+      bottom: 10px;
+      left: 20px;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 8px 12px;
+      border-radius: 15px;
+      font-size: 12px;
+      backdrop-filter: blur(10px);
+    ">
+      按空格键或↑键跳跃 | 迷你恐龙模式
     </div>
   </div>  <!-- gameContainer 结束 -->
-  <div id="leaderboard" style="margin:20px auto; text-align:center;"></div>
+  
+  <!-- 底部内容区域 -->
+  <div class="bottom-content">
+    <!-- 排行榜 -->
+    <div id="leaderboard"></div>
+    
+    <!-- 页脚 -->
+    <footer class="footer">
+      <div class="footer-container">
+        <div class="footer-section">
+          <h3>快速访问</h3>
+          <ul>
+            <li><a href="/static/pages/login.html">登录</a></li>
+            <li><a href="/static/pages/blog_frontend.html">博客</a></li>
+            <li><a href="/static/pages/index.html">首页</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>服务支持</h3>
+          <ul>
+            <li><a href="mailto:Lifuyve@outlook.com">联系客服邮箱</a></li>
+            <li><a href="https://github.com/shxYue/Tripy-Web/issues" target="_blank">问题反馈</a></li>
+            <li><a href="/static/pages/help.html">帮助中心</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>关于我们</h3>
+          <ul>
+            <li><a href="/static/pages/about.html">项目介绍</a></li>
+            <li><a href="https://github.com/shxYue/Tripy-Web" target="_blank">GitHub 仓库</a></li>
+            <li><a href="/static/pages/contact.html">联系我们</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
+  </div>
+  
   <!-- 通用脚本改为新的 js 目录 -->
   <script src="/static/js/common.js"></script>
   <script>
@@ -77,44 +275,49 @@
     const scoreEl = document.getElementById('score');
     const overEl = document.getElementById('gameOver');
 
-    // 统一缩放系数
-    const SCALE = 6.0;
+    // 统一缩放系数 - 调整为适应较小游戏区域
+    const SCALE = 4.0;
 
     // 逻辑用尺寸
     const groundHeight = 20 * SCALE;
 
     // dino & 障碍物初始化
     const dino = {
-      x: 50,
-      w: 40 * SCALE,
-      h: 40 * SCALE,
+      x: 60, // 稍微向右移动，给玩家更多反应时间
+      w: 30 * SCALE, // 缩小宽度：从40减少到30
+      h: 30 * SCALE, // 缩小高度：从40减少到30
       y: 0, vy: 0,
-      gravity: 0.6 * SCALE,
-      jumpForce: 24 * SCALE,
+      gravity: 0.45 * SCALE, // 进一步降低重力，小恐龙更轻盈
+      jumpForce: 30 * SCALE, // 进一步增强跳跃力，小恐龙更灵活
       grounded: false,
       baseY: 0
     };
     let obstacles = [], frame=0, score=0, speed=1.5*SCALE, spawnTimer=0, gameActive=true;
 
     function resizeCanvas(){
-      // 减去 header 高度
-      const hdr = document.getElementById('headerContainer');
-      const hh = hdr ? hdr.clientHeight : 0;
+      // 获取游戏容器的实际尺寸
+      const gameContainer = document.getElementById('gameContainer');
+      const containerRect = gameContainer.getBoundingClientRect();
 
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight - hh;
+      canvas.width = containerRect.width;
+      canvas.height = containerRect.height;
+      
       // 更新地面并重新计算 dino 基准 y
       const groundY = canvas.height - groundHeight;
       dino.baseY = groundY - dino.h;
       if (dino.grounded) dino.y = dino.baseY;
 
       // 更新 UI 字号
-      scoreEl.style.fontSize = `${(16 * SCALE)}px`;
-      overEl.style.fontSize = `${(24 * SCALE)}px`;
-      overEl.querySelector('button').style.fontSize = `${(14 * SCALE)}px`;
+      scoreEl.style.fontSize = `${Math.max(16, (16 * SCALE))}px`;
+      overEl.style.fontSize = `${Math.max(20, (24 * SCALE))}px`;
+      overEl.querySelector('button').style.fontSize = `${Math.max(14, (14 * SCALE))}px`;
     }
     window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
+    
+    // 延迟调用resizeCanvas，确保DOM完全加载
+    setTimeout(() => {
+      resizeCanvas();
+    }, 100);
 
     function resetGame(){
       obstacles=[]; frame=0; score=0; speed=1.5*SCALE; spawnTimer=0; gameActive=true;
@@ -122,21 +325,71 @@
       overEl.style.display='none';
       requestAnimationFrame(update);
     }
+    
+    function showGameOver(){
+      overEl.innerHTML = `
+        <h2>🎮 游戏结束</h2>
+        <div class="final-score">最终得分: ${score} 分</div>
+        <button onclick="resetGame()">🚀 重新开始</button>
+      `;
+      overEl.style.display='block';
+    }
     function spawnObstacle(){
-      const h0 = 20 + Math.random()*30;
+      const h0 = 15 + Math.random()*20; // 降低障碍物高度
       const h = h0 * SCALE;
       const groundY = canvas.height - groundHeight;
-      obstacles.push({ x:canvas.width, y:groundY - h, w:20*SCALE, h, passed:false });
+      obstacles.push({ x:canvas.width, y:groundY - h, w:15*SCALE, h, passed:false }); // 减小宽度
+    }
+
+    // 云朵数据
+    const clouds = [
+      {x: 100, y: 50, speed: 0.2},
+      {x: 300, y: 80, speed: 0.15},
+      {x: 500, y: 40, speed: 0.25},
+      {x: 700, y: 70, speed: 0.18}
+    ];
+
+    function drawClouds(){
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+      clouds.forEach(cloud => {
+        // 简单的云朵绘制
+        ctx.beginPath();
+        ctx.arc(cloud.x, cloud.y, 20, 0, Math.PI * 2);
+        ctx.arc(cloud.x + 15, cloud.y, 25, 0, Math.PI * 2);
+        ctx.arc(cloud.x + 35, cloud.y, 20, 0, Math.PI * 2);
+        ctx.arc(cloud.x + 25, cloud.y - 15, 15, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // 移动云朵
+        cloud.x -= cloud.speed;
+        if (cloud.x < -60) {
+          cloud.x = canvas.width + 60;
+        }
+      });
     }
 
     function update(){
       if (!gameActive) return;
       ctx.clearRect(0,0,canvas.width,canvas.height);
 
-      // draw ground
-      ctx.fillStyle='#888';
+      // 绘制云朵装饰
+      drawClouds();
+
+      // draw ground with gradient
       const groundY = canvas.height - groundHeight;
+      const gradient = ctx.createLinearGradient(0, groundY, 0, canvas.height);
+      gradient.addColorStop(0, '#8FBC8F');
+      gradient.addColorStop(1, '#228B22');
+      ctx.fillStyle = gradient;
       ctx.fillRect(0, groundY, canvas.width, groundHeight);
+      
+      // 地面装饰线
+      ctx.strokeStyle = '#006400';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, groundY);
+      ctx.lineTo(canvas.width, groundY);
+      ctx.stroke();
 
       // dino 物理 & 绘制
       dino.vy += dino.gravity;
@@ -151,24 +404,32 @@
       // spawn & draw obstacles
       if (--spawnTimer <= 0) {
         spawnObstacle();
-        spawnTimer = 80 + Math.random()*80;
+        spawnTimer = 120 + Math.random()*100; // 增加生成间隔，降低难度
       }
       obstacles.forEach(o=>{
         o.x -= speed;
         if (cactusImg.complete) {
           ctx.drawImage(cactusImg, o.x, o.y, o.w, o.h);
         }
-        // collision
-        if (dino.x < o.x+o.w && dino.x+dino.w > o.x &&
-            dino.y < o.y+o.h && dino.y+dino.h > o.y) {
-          gameActive=false; overEl.style.display='block'; postScoreAndShow();
+        // collision with tolerance (更宽松的碰撞检测)
+        const tolerance = 8; // 增加到8像素的容错空间，配合缩小的恐龙
+        if (dino.x + tolerance < o.x+o.w && dino.x+dino.w - tolerance > o.x &&
+            dino.y + tolerance < o.y+o.h && dino.y+dino.h - tolerance > o.y) {
+          gameActive=false; 
+          showGameOver();
+          postScoreAndShow();
         }
         if (!o.passed && o.x+o.w < dino.x) {
-          o.passed=true; score++; speed+=0.1*SCALE;
+          o.passed=true; 
+          score += (score % 5 === 4) ? 2 : 1; // 每5分给2分奖励
+          // 速度增长有上限，防止过于困难
+          if (speed < 2.5 * SCALE) {
+            speed+=0.05*SCALE; // 减慢速度增长
+          }
         }
       });
 
-      scoreEl.innerText = '得分: ' + score;
+      scoreEl.innerText = `🏃‍♂️ 得分: ${score} | 速度: ${Math.round(speed/SCALE * 10)/10}x`;
       if (gameActive) requestAnimationFrame(update);
     }
 
@@ -208,8 +469,37 @@
         const res = await authFetch(`/dino/leaderboard?limit=${limit}`);
         const list = await res.json();
         const lb = document.getElementById('leaderboard');
-        lb.innerHTML = '<h3>排行榜</h3>' + list.map(e => `<div>${e.username}: ${e.score}</div>`).join('');
-      } catch (e) { console.error(e); }
+        
+        if (list && list.length > 0) {
+          const leaderboardHTML = `
+            <h3>🏆 排行榜</h3>
+            ${list.map((e, index) => `
+              <div class="leaderboard-item ${index < 3 ? 'top-three' : ''}">
+                <span class="leaderboard-rank">#${index + 1}</span>
+                <span class="leaderboard-name">${e.username}</span>
+                <span class="leaderboard-score">${e.score}分</span>
+              </div>
+            `).join('')}
+          `;
+          lb.innerHTML = leaderboardHTML;
+        } else {
+          lb.innerHTML = `
+            <h3>🏆 排行榜</h3>
+            <div style="color: #666; font-style: italic; padding: 20px;">
+              暂无记录，成为第一个上榜的玩家！
+            </div>
+          `;
+        }
+      } catch (e) { 
+        console.error('排行榜加载失败:', e);
+        const lb = document.getElementById('leaderboard');
+        lb.innerHTML = `
+          <h3>🏆 排行榜</h3>
+          <div style="color: #666; font-style: italic; padding: 20px;">
+            排行榜加载中...
+          </div>
+        `;
+      }
     }
     // 页面加载时渲染排行榜
     showLeaderboard();

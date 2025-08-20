@@ -4,97 +4,45 @@
   <meta charset="UTF-8">
   <title>个人中心</title>
   <link rel="stylesheet" href="/static/css/common.css">
-  <script src="/static/js/common.js"></script>
 </head>
-<body>
-  <!-- 直接嵌入主页面同款顶栏 HTML -->
-  <div id="siteHeader">
-    <nav>
-      <div class="logo">Tripy-Web</div>
-      <div class="right-area">
-        <a href="/static/pages/index.html" class="home-link"
-           style="color:#fff; text-decoration:none; font-size:16px; padding:8px 12px;">
-          首页
-        </a>
-        <div class="dropdown" style="position:relative;">
-          <button id="menuBtn" type="button">功能菜单 ▾</button>
-          <div class="dropdown-content" id="dropdownContent" style="
-            display:none;
-            position:absolute;
-            top:100%;
-            right:0;
-            background:#fff;
-            min-width:160px;
-            box-shadow:0 2px 8px rgba(0,0,0,0.15);
-            border-radius:4px;
-            z-index:1;">
-            <a href="/static/pages/blog_frontend.html"
-               style="display:block;color:#333;padding:10px 16px;text-decoration:none;">
-              博客管理
-            </a>
-            <a href="/static/pages/dino_game.html" style="display:block;color:#333;padding:10px 16px;text-decoration:none;">
-              小恐龙跳跃游戏
-            </a>
-          </div>
+<body class="profile-bg">
+  <!-- 使用动态加载的顶栏 -->
+  <div id="headerContainer"></div>
+  
+  <div class="content-wrapper">
+    <div class="container" style="padding:20px;max-width:600px;margin:0 auto;">
+      <h1>个人中心</h1>
+      <form id="profileForm">
+        <div>
+          <label>用户名:</label>
+          <span id="username"></span>
         </div>
-  <script>
-    // 顶栏功能菜单点击展开/收起
-    const menuBtn = document.getElementById('menuBtn');
-    const dropdownContent = document.getElementById('dropdownContent');
-    if(menuBtn && dropdownContent) {
-      menuBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
-      });
-      // 点击页面其他地方关闭菜单
-      document.addEventListener('click', function() {
-        dropdownContent.style.display = 'none';
-      });
-      // 阻止菜单内部点击冒泡
-      dropdownContent.addEventListener('click', function(e){ e.stopPropagation(); });
-    }
-  </script>
-        <a id="authBtn" class="auth-btn" href="/static/pages/login.html"
-           style="background:transparent;border:1px solid #fff;color:#fff;
-                  padding:8px 12px;border-radius:4px;cursor:pointer;transition:background 0.2s;">
-          登录
-        </a>
-        <a id="profileBtn" href="/static/pages/profile.html" style="display:none;background:transparent;border:1px solid #fff;color:#fff;padding:8px 12px;border-radius:4px;cursor:pointer;transition:background 0.2s;margin-left:10px;">
-          个人中心
-        </a>
-      </div>
-    </nav>
-  </div>
-  <div class="container profile-bg" style="padding:20px;max-width:600px;margin:0 auto;">
-    <h1>个人中心</h1>
-    <form id="profileForm">
-      <div>
-        <label>用户名:</label>
-        <span id="username"></span>
-      </div>
-      <div style="margin-top:10px;">
-        <label for="nickname">昵称:</label>
-        <input type="text" id="nickname" name="nickname" required style="width:100%;padding:8px;">
-      </div>
-      <hr style="margin:24px 0;">
-      <div>
-        <label for="old_password">原密码:</label>
-        <input type="password" id="old_password" name="old_password" style="width:100%;padding:8px;">
-      </div>
-      <div style="margin-top:10px;">
-        <label for="new_password">新密码:</label>
-        <input type="password" id="new_password" name="new_password" style="width:100%;padding:8px;">
-      </div>
-      <div style="margin-top:10px;">
-        <label for="confirm_password">确认新密码:</label>
-        <input type="password" id="confirm_password" name="confirm_password" style="width:100%;padding:8px;">
-      </div>
-      <div style="margin-top:20px;">
-        <button type="submit" style="padding:10px 20px;">保存</button>
-      </div>
-    </form>
+        <div style="margin-top:10px;">
+          <label for="nickname">昵称:</label>
+          <input type="text" id="nickname" name="nickname" required style="width:100%;padding:8px;">
+        </div>
+        <hr style="margin:24px 0;">
+        <div>
+          <label for="old_password">原密码:</label>
+          <input type="password" id="old_password" name="old_password" style="width:100%;padding:8px;">
+        </div>
+        <div style="margin-top:10px;">
+          <label for="new_password">新密码:</label>
+          <input type="password" id="new_password" name="new_password" style="width:100%;padding:8px;">
+        </div>
+        <div style="margin-top:10px;">
+          <label for="confirm_password">确认新密码:</label>
+          <input type="password" id="confirm_password" name="confirm_password" style="width:100%;padding:8px;">
+        </div>
+        <div style="margin-top:20px;">
+          <button type="submit" style="padding:10px 20px;">保存</button>
+        </div>
+      </form>
+    </div>
   </div>
 
+  <!-- 引入通用脚本 -->
+  <script src="/static/js/common.js"></script>
   <script>
     // 获取并填写用户信息
     async function loadProfile() {
@@ -105,6 +53,9 @@
         document.getElementById('nickname').value = user.nickname || '';
       } catch (e) {
         console.error('加载用户信息失败', e);
+        // 如果无法加载用户信息，可能是未登录，跳转到登录页
+        alert('请先登录');
+        window.location.href = '/static/pages/login.html';
       }
     }
 
@@ -146,7 +97,13 @@
       }
     });
 
-    loadProfile();
+    // 页面加载完成后执行
+    document.addEventListener('DOMContentLoaded', function() {
+      // 等待header加载完成后再加载用户信息
+      setTimeout(() => {
+        loadProfile();
+      }, 200);
+    });
   </script>
 </body>
 </html>
